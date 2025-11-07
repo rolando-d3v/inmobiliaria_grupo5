@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+import unicodedata
+import re
 
 # --- Título ---
 st.title("Dashboard Inmobiliaria")
@@ -15,19 +17,28 @@ st.sidebar.header("Controles")
 chart_type = st.sidebar.selectbox(
     "Selecciona el tipo de gráfico",
     [
-        {"id": 1, "name": "Mascotas vs Nivel de Interés"},
-        {"id": 2, "name": "Nivel de Interés (%)"},
-        {"id": 3, "name": "Proyectos vs Nivel de Interés"},
-        {"id": 4, "name": "Leads por Medio de Captación"},
-        {"id": 5, "name": "Leads por Mes y Nivel de Interés"},
-        {"id": 6, "name": "Estado Civil vs Proyecto"},
-        {"id": 7, "name": "Gusto del Cliente vs Nivel de Interés"},
-        {"id": 8, "name": "Distribución de proyectos por asesor — Top asesores (agrupado)"}
+        {"id": 1, "name": "1️ Mascotas vs Nivel de Interés"},
+        {"id": 2, "name": "2️ Nivel de Interés (%)"},
+        {"id": 3, "name": "3️ Proyectos vs Nivel de Interés"},
+        {"id": 4, "name": "4️ Leads por Medio de Captación"},
+        {"id": 5, "name": "5️ Leads por Mes y Nivel de Interés"},
+        {"id": 6, "name": "6️ Estado Civil vs Proyecto"},
+        {"id": 7, "name": "7️ Gusto del Cliente vs Nivel de Interés"},
+        {"id": 8, "name": "8️ Distribución de proyectos por asesor — Top asesores (agrupado)"},
+        {"id": 9, "name": "9️ Todos los Tipos de Financiamiento" },
+        {"id": 10, "name": "10️ Área Social más valorada vs Nivel de Interés" },
+        {"id": 11, "name": "11️ Área Social más valorada vs Número de Proyectos Relacionados" },
+        {"id": 12, "name": "12️ Nivel de Ingresos VS Nivel de Interés en base al perfil del cliente" },
+        {"id": 13, "name": "13️ Canal de Entrada VS Nivel de Interés en base al perfil del cliente" }
+    
     ],
     format_func=lambda option: option["name"]
 )
 
-# =======================================================================
+
+
+
+
 # ?? 1 Gráfico: Mascotas vs Nivel de Interés
 # =======================================================================
 if chart_type["id"] == 1:
@@ -55,7 +66,6 @@ if chart_type["id"] == 1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-# =======================================================================
 # ?? 2️ Gráfico: Nivel de Interés (%)
 # =======================================================================
 elif chart_type["id"] == 2:
@@ -81,7 +91,7 @@ elif chart_type["id"] == 2:
 
     st.plotly_chart(fig, use_container_width=True)
 
-# =======================================================================
+
 # ?? 3️ Gráfico: Proyectos vs Nivel de Interés
 # =======================================================================
 elif chart_type["id"] == 3:
@@ -125,7 +135,7 @@ elif chart_type["id"] == 3:
     st.plotly_chart(fig, use_container_width=True)
 
 
-# =======================================================================
+
 # ?? 4️ Gráfico: Leads por Medio de Captación
 # =======================================================================
 elif chart_type["id"] == 4:
@@ -177,6 +187,8 @@ elif chart_type["id"] == 4:
     st.plotly_chart(fig, use_container_width=True)
 
 
+# ?? 5️ Gráfico: Leads por Mes y Nivel de Interés
+# =======================================================================
 elif chart_type["id"] == 5:
     date_col = "Fecha Creación"
     hue = "Nivel De Interes"
@@ -223,6 +235,8 @@ elif chart_type["id"] == 5:
     st.plotly_chart(fig, use_container_width=True)
 
 
+# ?? 6️ Gráfico: Estado Civil vs Proyecto
+# =======================================================================
 elif chart_type["id"] == 6:
     # === Normalización de columnas ===
     for c in ["Estado Civil", "Proyectos Relacionados"]:
@@ -235,7 +249,7 @@ elif chart_type["id"] == 6:
                 .replace({"nan": pd.NA})
             )
 
-# === Parámetros configurables ===
+
     TOP_PROYECTOS = 8             # número de proyectos principales a mostrar
     MIN_CATEGORIAS_ESTADO = 3     # cantidad mínima de categorías de estado civil a incluir
 
@@ -288,9 +302,12 @@ elif chart_type["id"] == 6:
         margin=dict(l=60, r=40, t=60, b=60)
     )
 
-# === Mostrar en Streamlit ===
+
     st.plotly_chart(fig, use_container_width=True)
 
+
+# ?? 7️ Gráfico: Gusto del Cliente vs Nivel de Interés
+# =======================================================================
 elif chart_type["id"] == 7:
     for c in ["Área Social más valorada", "Nivel De Interes"]:
         if c in df.columns:
@@ -353,7 +370,8 @@ elif chart_type["id"] == 7:
     st.plotly_chart(fig, use_container_width=True)
 
 
-
+# ?? 8️ Gráfico: Distribución de proyectos por asesor — Top asesores (agrupado)
+# =======================================================================
 elif chart_type["id"] == 8:
     for c in ["Usuario Creador", "Proyectos Relacionados"]:
         if c in df.columns:
@@ -425,4 +443,270 @@ elif chart_type["id"] == 8:
     )
 
     # === Mostrar en Streamlit ===
+    st.plotly_chart(fig, use_container_width=True)
+    
+    
+# ?? 9️ Gráfico: Todos los Tipos de Financiamiento
+# =======================================================================
+elif chart_type["id"] == 9:
+    col_nivel = "Nivel De Interes"
+    col_financiamiento = "Tipo de Financiamiento"
+
+    # Filtrar valores nulos
+    df_filtrado = df[[col_financiamiento, col_nivel]].dropna()
+
+    # Contar proyectos relacionados por Tipo de Financiamiento y Nivel de Interés
+    conteo_todos = (
+        df_filtrado
+        .groupby([col_financiamiento, col_nivel])
+        .size()
+        .reset_index(name="Proyectos Relacionados")
+    )
+
+    # Crear gráfico interactivo con Plotly
+    fig = px.bar(
+        conteo_todos,
+        x=col_financiamiento,
+        y="Proyectos Relacionados",
+        color=col_nivel,
+        barmode="group",  # puedes cambiar a "stack" si prefieres apilado
+        text="Proyectos Relacionados",
+        title="Todos los Tipos de Financiamiento",
+        labels={
+            col_financiamiento: "Tipo de Financiamiento",
+            "Proyectos Relacionados": "Número de Proyectos Relacionados",
+            col_nivel: "Nivel de Interés"
+        },
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
+
+    fig.update_traces(textposition="outside")  # mostrar valores sobre las barras
+    fig.update_layout(
+        xaxis_tickangle=45,
+        xaxis_title="Tipo de Financiamiento",
+        yaxis_title="Número de Proyectos Relacionados",
+        legend_title="Nivel de Interés",
+        uniformtext_minsize=8,
+        uniformtext_mode='hide'
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+# ?? 10️ Gráfico: Área Social más valorada vs Nivel de Interés
+# =======================================================================
+elif chart_type["id"] == 10:
+    col_area = "Área Social más valorada"
+    col_nivel = "Nivel De Interes"
+
+    st.subheader("Área Común más Valorada vs Nivel de Interés")
+
+    # Filtrar valores nulos
+    df_filtrado = df[[col_area, col_nivel, "Proyectos Relacionados"]].dropna()
+
+    # Agrupar para gráfico agrupado
+    conteo = (
+        df_filtrado
+        .groupby([col_area, col_nivel])["Proyectos Relacionados"]
+        .count()
+        .reset_index()
+    )
+
+    # =============================
+    # Gráfico de barras horizontal agrupado
+    # =============================
+    fig_grouped = px.bar(
+        conteo,
+        y=col_area,
+        x="Proyectos Relacionados",
+        color=col_nivel,
+        barmode="group",
+        text="Proyectos Relacionados",
+        orientation="h",
+        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Agrupado)",
+        labels={
+            col_area: "Áreas Comunes Valoradas",
+            "Proyectos Relacionados": "Número de Proyectos Relacionados",
+            col_nivel: "Nivel de Interés"
+        },
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
+    fig_grouped.update_traces(textposition="outside")
+    st.plotly_chart(fig_grouped, use_container_width=True)
+
+    # =============================
+    # Gráfico de barras horizontal apilado
+    # =============================
+    fig_stacked = px.bar(
+        conteo,
+        y=col_area,
+        x="Proyectos Relacionados",
+        color=col_nivel,
+        barmode="stack",
+        text="Proyectos Relacionados",
+        orientation="h",
+        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Apilado)",
+        labels={
+            col_area: "Áreas Comunes Valoradas",
+            "Proyectos Relacionados": "Número de Proyectos Relacionados",
+            col_nivel: "Nivel de Interés"
+        },
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
+    fig_stacked.update_traces(textposition="inside")
+    st.plotly_chart(fig_stacked, use_container_width=True)
+
+
+elif chart_type["id"] == 11:
+    col_area = "Área Social más valorada"
+
+    st.subheader("Áreas Sociales más valoradas vs Número de Proyectos Relacionados")
+
+    # Mostrar las áreas sociales disponibles
+    st.write("Áreas encontradas en el dataset:")
+    st.write(df[col_area].dropna().unique())
+
+    # Agrupar por área social y contar proyectos relacionados
+    conteo_proyectos = (
+        df.groupby(col_area)["Proyectos Relacionados"]
+        .count()
+        .reset_index()
+        .rename(columns={"Proyectos Relacionados": "Cantidad de Proyectos"})
+        .sort_values("Cantidad de Proyectos", ascending=True)
+    )
+
+    # Crear gráfico de barras horizontal interactivo
+    fig = px.bar(
+        conteo_proyectos,
+        y=col_area,
+        x="Cantidad de Proyectos",
+        orientation="h",
+        text="Cantidad de Proyectos",
+        title="Áreas Sociales más valoradas vs Número de Proyectos Relacionados",
+        labels={
+            col_area: "Área Social más valorada",
+            "Cantidad de Proyectos": "Cantidad de Proyectos Relacionados"
+        },
+        color="Cantidad de Proyectos",
+        color_continuous_scale="Blues"  # similar al color 'skyblue' original
+    )
+
+    # Personalizar visualización
+    fig.update_traces(textposition="outside")
+    fig.update_layout(
+        xaxis_title="Cantidad de Proyectos Relacionados",
+        yaxis_title="Área Social más valorada",
+        coloraxis_showscale=False,
+        uniformtext_minsize=8,
+        uniformtext_mode="hide"
+    )
+
+    # Mostrar gráfico en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+elif chart_type["id"] == 12:  # Puedes asignar el ID que desees
+    col_financiamiento = "Tipo de Financiamiento"
+    col_interes = "Nivel De Interes"
+    col_genero = "Genero"
+
+    # Agrupamos por Tipo de Financiamiento, Nivel de Interes y Genero
+    conteo_nivel_ingresos = (
+        df.groupby([col_financiamiento, col_interes, col_genero])
+        .size()
+        .reset_index(name="Cantidad")
+    )
+
+    # Creamos la columna combinada "Grupo"
+    conteo_nivel_ingresos["Grupo"] = (
+        conteo_nivel_ingresos[col_genero].astype(str)
+        + " - "
+        + conteo_nivel_ingresos[col_interes].astype(str)
+    )
+
+    # Gráfico con Plotly Express
+    fig = px.bar(
+        conteo_nivel_ingresos,
+        x=col_financiamiento,
+        y="Cantidad",
+        color="Grupo",
+        barmode="group",
+        title="Distribución de Tipo de Financiamiento vs Nivel de Interés por Género",
+        labels={
+            col_financiamiento: "Tipo de Financiamiento",
+            "Cantidad": "Cantidad de Personas",
+            "Grupo": "Género + Nivel de Interés",
+        },
+    )
+
+    # Ajustes visuales
+    fig.update_layout(
+        xaxis_title="Tipo de Financiamiento",
+        yaxis_title="Cantidad de Personas",
+        legend_title="Género + Nivel de Interés",
+        xaxis_tickangle=-45,
+    )
+
+    # Mostrar en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+
+elif chart_type["id"] == 13:  # Gráfico de financiamiento por nivel de interés y género
+    col_financiamiento = "Tipo de Financiamiento"
+    col_interes = "Nivel De Interes"
+    col_genero = "Genero"
+
+    # Limpiar valores nulos
+    df = df.dropna(subset=[col_financiamiento, col_interes, col_genero])
+
+    # Agrupar por Tipo de Financiamiento, Nivel de Interes y Genero
+    conteo_nivel_ingresos = (
+        df.groupby([col_financiamiento, col_interes, col_genero])
+        .size()
+        .reset_index(name="Cantidad")
+    )
+
+    # Calcular porcentaje dentro de cada tipo de financiamiento
+    conteo_nivel_ingresos["Porcentaje"] = (
+        conteo_nivel_ingresos.groupby(col_financiamiento)["Cantidad"]
+        .apply(lambda x: (x / x.sum()) * 100)
+        .reset_index(level=0, drop=True)
+    )
+
+    # Crear la columna combinada "Grupo"
+    conteo_nivel_ingresos["Grupo"] = (
+        conteo_nivel_ingresos[col_genero].astype(str)
+        + " - "
+        + conteo_nivel_ingresos[col_interes].astype(str)
+    )
+
+    # Crear gráfico con Plotly Express
+    fig = px.bar(
+        conteo_nivel_ingresos,
+        x=col_financiamiento,
+        y="Porcentaje",
+        color="Grupo",
+        barmode="group",
+        text=conteo_nivel_ingresos["Porcentaje"].apply(lambda x: f"{x:.1f}%"),
+        title="Distribución del Tipo de Financiamiento vs Nivel de Interés por Género (%)",
+        labels={
+            col_financiamiento: "Tipo de Financiamiento",
+            "Porcentaje": "Porcentaje dentro del Tipo de Financiamiento",
+            "Grupo": "Género + Nivel de Interés",
+        },
+    )
+
+    # Ajustes visuales
+    fig.update_traces(textposition="outside")
+    fig.update_layout(
+        xaxis_title="Tipo de Financiamiento",
+        yaxis_title="Porcentaje de Personas",
+        legend_title="Género + Nivel de Interés",
+        xaxis_tickangle=-45,
+        yaxis_range=[0, 100],
+    )
+
+    # Mostrar gráfico en Streamlit
     st.plotly_chart(fig, use_container_width=True)
