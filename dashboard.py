@@ -2,12 +2,27 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+from sqlalchemy import create_engine
+
+
+
+# Your PostgreSQL connection string
+connection_string = "postgresql://postgres:fUkQJyRhLsHaigOKtuVzDAaKOxNoMSzc@trolley.proxy.rlwy.net:58949/railway"
+
+
+# Create SQLAlchemy engine
+engine = create_engine(connection_string)
+
+# Example: load an entire table into a DataFrame
+table_name = "data_limpia_inmobiliaria"  # 🔹 Replace with the actual table name
+data = pd.read_sql_table(table_name, engine)
+
 
 # --- Load data ---
-data = pd.read_csv(r"./data_limpia_inmobiliaria.csv")
+# data = pd.read_csv(r"./data_limpia_inmobiliaria.csv")
 # data = pd.read_csv(r"C:\Users\jcama\Desktop\Dashboard\data_limpia_inmobiliaria.csv")
-data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"])
-
+# data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"])
+data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"], format="mixed", errors="coerce")
 # --- Page config ---
 st.set_page_config(page_title="Leads Dashboard", layout="wide")
 
@@ -650,3 +665,5 @@ elif tab_selection == "Nivel de Interés":
 
 
     render_4charts([fig9, fig10, fig11, fig12])
+
+
