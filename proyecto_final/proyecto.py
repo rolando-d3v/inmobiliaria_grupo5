@@ -253,7 +253,7 @@ elif chart_type["id"] == 6:
     TOP_PROYECTOS = 8             # número de proyectos principales a mostrar
     MIN_CATEGORIAS_ESTADO = 3     # cantidad mínima de categorías de estado civil a incluir
 
-# === Seleccionar los proyectos con más leads ===
+
     top_proy = (
         df["Proyectos Relacionados"]
         .dropna()
