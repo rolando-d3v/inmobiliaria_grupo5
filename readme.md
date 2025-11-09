@@ -26,6 +26,23 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 | ![UI Screenshot](img/dash_1.png) | ![QR Output](img/screenshot_qr.png) |
 | ![UI Screenshot](img/dash_1.png) |
 
+<br>
+
+| dashboard 1 |
+|----------|
+| ![UI Screenshot](img/dash_1.png) |
+
+<br>
+
+| dashboard 2 |
+|----------|
+| ![UI Screenshot](img/dash_2.png) |
+
+<br>
+
+| dashboard 3 |
+|----------|
+| ![UI Screenshot](img/dash_3.png) |
 
 ---
 
