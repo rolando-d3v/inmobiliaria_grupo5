@@ -10,10 +10,12 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 
 ## 🚀 Características
 
-- ✅ Generar enlaces profundos **con seguimiento**
-- ✅ **Flujo de datos reproducible**: ingesta programada de fuentes operativas (por canal y proyecto), limpieza, estandarización y anonimización bajo buenas prácticas.
-- ✅ **Modelado supervisado**: construcción de un conjunto de variables, entrenamiento de modelos base y avanzados .
-- ✅ **Entrega accionable**: un dashboard interactivo que muestre la data actualizada, predicciones por lead y KPI operativos para priorización diaria, además de reportes automáticos con frecuencia definida.
+- ✅ **Flujo de datos reproducible**:
+     ingesta programada de fuentes operativas (por canal y proyecto), limpieza, estandarización y anonimización bajo buenas prácticas.
+- ✅ **Modelado supervisado**: 
+     construcción de un conjunto de variables, entrenamiento de modelos base y avanzados .
+- ✅ **Entrega accionable**:
+      un dashboard interactivo que muestre la data actualizada, predicciones por lead y KPI operativos para priorización diaria, además de reportes automáticos con frecuencia definida.
 
 ---
 
