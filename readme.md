@@ -21,9 +21,10 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 
 ## 📸 Capturas de pantalla
 
-| Interfaz | QR Code Output | Text Generation |
-|----------|----------------|------------------|
-| ![UI Screenshot](img/dash_1.png) | ![QR Output](img/screenshot_qr.png) | ![Text Output](img/screenshot_text.png) |
+| Interfaz | QR Code Output |
+|----------|----------------|
+| ![UI Screenshot](img/dash_1.png) | ![QR Output](img/screenshot_qr.png) |
+| ![UI Screenshot](img/dash_1.png) |
 
 
 ---
