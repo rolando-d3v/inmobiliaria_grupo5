@@ -35,6 +35,7 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 ├── img/                     # imagenes del proyecto
 ├── requirements.txt         # dependencias del proyecto
 ├── runtime.txt              # version de python
+├── .gitignore               # archivos que no se suben a github
 ├── readme.md                # descripcion y instrucciones del proyecto
 ```
 
@@ -62,14 +63,19 @@ Ejecutar el siguiente comando en la raíz de su proyecto:
 ```bash
 python -m venv venv
 ```
-This will create a folder named venv containing your virtual environment.
+Esto creará una carpeta llamada venv que contendrá su entorno virtual.
 
 
 ### 4. Activar el entorno virtual
-En Command Prompt, ejecutar:
+En Command Prompt, ejecutar en windows:
 
 ```bash
 venv\Scripts\activate
+```
+En Command Prompt, ejecutar en linux:
+
+```bash
+source venv/bin/activate
 ```
 
 ### 5. Instalar dependencias
@@ -83,26 +89,12 @@ pip install -r requirements.txt
 
 ## ▶️ How to Use
 
-### 1. Obtener una clave API gratuita de Groq
-
-Cree sus claves de API desde su cuenta gratuita
-
-🔗 [Groq Console – API Keys](https://console.groq.com/keys)
-
-### 2. Crear un archivo `.env`
-
-Cree su archivo `.env` con su variable `GROQ_API_KEY`. 
-
-```bash
-GROQ_API_KEY="your_api_key"
-```
-
-### 3. Ejecute la App con:
+### 1. Ejecute la App con:
 
 Run the main script:
 
 ```bash
-streamlit run ui.py
+streamlit run app.py
 ```
 
 You will be prompted to input or confirm product data. The tool will:
@@ -115,17 +107,14 @@ You will be prompted to input or confirm product data. The tool will:
 
 ## 📁 Output
 
-- QR code is saved in the `qr/` directory  
-- Log stored in `yape_scan.log`
-- Dynamic text outputs are printed or stored depending on the function  
-
+- Dashboard con filtros con  Nivel de Interes
+- Reportes 
 ---
 
-## 👨‍👩‍👧‍👦 Team Members
+## 👨‍👩‍👧‍👦 Miembros del equipo 📚
 
-- Carlos Loyola [@cloyola](https://github.com/cloyola)  
-- Diego Nasra  
-- Ana Cecilia Zegarra 
-- Brenda Zambrano  
-- Mónica Saldías  
-- Nicolás Nugent  
+- Rolando Abraham Mamani Flores [@rolando-d3v](https://github.com/rolando-d3v) 
+- Cesar Ponce Rojas
+- Jesus Maldonado Llacsahuanga	
+- Stephany Leticia Flores Cadillo
+- Elmer Dante Rojas Zuta
