@@ -4,52 +4,46 @@
 ![Streamlit](https://img.shields.io/badge/built%20with-streamlit-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-This project was developed by **Grupo 1** from **UTEC** as part of a Python programming course. It provides an intuitive tool for generating deep links, QR codes, and dynamic promotional descriptions — ideal for marketing and e-commerce use cases.
-
-
----
-
-## 🚀 Features
-
-- ✅ Generate product **deep links** with tracking
-- ✅ Create dynamic **marketing descriptions** from product images or data
-- ✅ Produce and store **QR codes** for campaigns
-- ✅ Save and organize all outputs in a structured format
+Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un curso de programación en Python. Este proyecto propone desarrollar una solución en Python que integre automatización de datos y técnicas de aprendizaje automático, con el objetivo de estimar la probabilidad de conversión de leads y generar reportes comerciales confiables.
 
 ---
 
-## 📸 Screenshots
+## 🚀 Características
 
-| Interface | QR Code Output | Text Generation |
+- ✅ Generar enlaces profundos **con seguimiento**
+- ✅ **Flujo de datos reproducible**: ingesta programada de fuentes operativas (por canal y proyecto), limpieza, estandarización y anonimización bajo buenas prácticas.
+- ✅ **Modelado supervisado**: construcción de un conjunto de variables, entrenamiento de modelos base y avanzados .
+- ✅ **Entrega accionable**: un dashboard interactivo que muestre la data actualizada, predicciones por lead y KPI operativos para priorización diaria, además de reportes automáticos con frecuencia definida.
+
+---
+
+## 📸 Capturas de pantalla
+
+| Interfaz | QR Code Output | Text Generation |
 |----------|----------------|------------------|
 | ![UI Screenshot](img/screenshot_ui.png) | ![QR Output](img/screenshot_qr.png) | ![Text Output](img/screenshot_text.png) |
 
 
 ---
 
-## 🗂 Project Structure
+## 🗂  Estructura del Proyecto
 
 ```
 ├── ui.py                    # UI interface using Streamlit
 ├── main.py                  # Main process
-├── generate_deeplink.py     # Deep link generation logic
-├── generate_description.py  # Description creation logic from image
-├── generate_qr.py           # QR code creation logic
 ├── generate_text.py         # Utility to assemble content
-├── content/                 # Input content/data, CSV to search data
-├── img/                     # Bills to scan
-├── qr/                      # Stored QR data
-├── requirements.txt         # Python dependencies
+├── img/                     # imagenes del proyecto
+├── requirements.txt         # dependencias del proyecto
 ```
 
 ---
 
-## 🧪 Setup Instructions (with Virtual Environment in VS Code)
+## 🧪 Instrucciones de Instalación (con Entorno Virtual en VS Code)
 
-Follow these steps to set up and activate a virtual environment in your project using Visual Studio Code with the `Command Prompt` terminal:
+Siga estos pasos para configurar y activar un entorno virtual en su proyecto usando Visual Studio Code con el terminal `Command Prompt`:
 
-### 1. Open the terminal in VS Code
-- Open VS Code.
+### 1. Abrir el terminal en VS Code
+- Abra VS Code.
 - Use the shortcut: `Ctrl + ` (backtick) or go to **View > Terminal**.
 - Make sure you are using `Command Prompt` as the terminal. You can switch terminals from the dropdown menu in the top-right corner of the terminal panel.
 
@@ -60,8 +54,8 @@ Make sure you have **Python 3.8+** installed.
 python
 ```
 
-### 3. Create the virtual environment
-Run the following command in the root of your project:
+### 3. Crear el entorno virtual
+Ejecutar el siguiente comando en la raíz de su proyecto:
 
 ```bash
 python -m venv venv
@@ -69,15 +63,15 @@ python -m venv venv
 This will create a folder named venv containing your virtual environment.
 
 
-### 4. Activate the virtual environment
-In Command Prompt, run:
+### 4. Activar el entorno virtual
+En Command Prompt, ejecutar:
 
 ```bash
 venv\Scripts\activate
 ```
 
-### 5. Install dependencies
-After activation, install the required packages in the next step.
+### 5. Instalar dependencias
+Después de activar, instalar los paquetes requeridos en el siguiente paso.
 
 ```bash
 pip install -r requirements.txt
@@ -87,21 +81,21 @@ pip install -r requirements.txt
 
 ## ▶️ How to Use
 
-### 1. Get a Free API Key from Groq
+### 1. Obtener una clave API gratuita de Groq
 
-Create your API keys from your free account
+Cree sus claves de API desde su cuenta gratuita
 
 🔗 [Groq Console – API Keys](https://console.groq.com/keys)
 
-### 2. Create a `.env` File
+### 2. Crear un archivo `.env`
 
-Create your `.env` file with your `GROQ_API_KEY` variable. 
+Cree su archivo `.env` con su variable `GROQ_API_KEY`. 
 
 ```bash
 GROQ_API_KEY="your_api_key"
 ```
 
-### 3. Launch the App
+### 3. Ejecute la App con:
 
 Run the main script:
 
