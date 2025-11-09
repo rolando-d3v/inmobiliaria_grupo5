@@ -31,11 +31,11 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 ## 🗂  Estructura del Proyecto
 
 ```
-├── ui.py                    # UI interface using Streamlit
-├── main.py                  # Main process
-├── generate_text.py         # Utility to assemble content
+├── app.py                   # Aplicacion principal
 ├── img/                     # imagenes del proyecto
 ├── requirements.txt         # dependencias del proyecto
+├── runtime.txt              # version de python
+├── readme.md                # descripcion y instrucciones del proyecto
 ```
 
 ---
