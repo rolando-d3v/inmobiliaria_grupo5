@@ -97,16 +97,11 @@ Run the main script:
 streamlit run app.py
 ```
 
-You will be prompted to input or confirm product data. The tool will:
-
-1. ✅ Generate a short deep link  
-2. ✅ Create marketing text  
-3. ✅ Produce and save a QR code  
-
 ---
 
-## 📁 Output
+## 📁 Salida del proyecto
 
+- Dashboard con filtros con  Nivel de Interes
 - Dashboard con filtros con  Nivel de Interes
 - Reportes 
 ---
