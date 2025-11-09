@@ -21,12 +21,6 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 
 ## 📸 Capturas de pantalla
 
-| Interfaz | QR Code Output |
-|----------|----------------|
-| ![UI Screenshot](img/dash_1.png) | ![QR Output](img/screenshot_qr.png) |
-| ![UI Screenshot](img/dash_1.png) |
-
-<br>
 
 | dashboard 1 |
 |----------|
@@ -43,6 +37,14 @@ Este proyecto fue desarrollado por el **Grupo 5** de **UTEC** como parte de un c
 | dashboard 3 |
 |----------|
 | ![UI Screenshot](img/dash_3.png) |
+
+<!-- forma para poner una tabla y varias columnas de imagenes -->
+<!-- 
+| Interface | QR Code Output | Text Generation |
+|----------|----------------|------------------|
+| ![UI Screenshot](img/screenshot_ui.png) | ![QR Output](img/screenshot_qr.png) | ![Text Output](img/screenshot_text.png) | -->
+
+
 
 ---
 
