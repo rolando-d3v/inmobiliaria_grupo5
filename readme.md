@@ -1,4 +1,4 @@
-# 🔗 Python UTEC - Grupo 1: QR & Deep Link Generator
+# 🔗 Python UTEC - Grupo 5: Automatización de reportes comerciales con Python en la industria inmobiliaria
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/built%20with-streamlit-orange)
