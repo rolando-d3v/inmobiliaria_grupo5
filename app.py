@@ -6,31 +6,39 @@ from sqlalchemy import create_engine
 
 
 
-# Your PostgreSQL connection string
+# uri PostgreSQL connexion
 connection_string = "postgresql://postgres:fUkQJyRhLsHaigOKtuVzDAaKOxNoMSzc@trolley.proxy.rlwy.net:58949/railway"
 
 
 # Create SQLAlchemy engine
 engine = create_engine(connection_string)
 
-# Example: load an entire table into a DataFrame
-table_name = "data_limpia_inmobiliaria"  # 🔹 Replace with the actual table name
+# Leer tabla de la base de datos
+table_name = "data_limpia_inmobiliaria" 
 data = pd.read_sql_table(table_name, engine)
 
 
-# --- Load data ---
-# data = pd.read_csv(r"./data_limpia_inmobiliaria.csv")
-# data = pd.read_csv(r"C:\Users\jcama\Desktop\Dashboard\data_limpia_inmobiliaria.csv")
-# data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"])
+# --- selectbox de tabs ---
+tab_selection = st.sidebar.selectbox(
+    "Selecciona la pestaña",
+    ["Proyecto Relacionado", "Áreas más y menos valoradas", "Nivel de Interés"],
+)
+
+
+# --- Conversión de fecha ---
 data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"], format="mixed", errors="coerce")
-# --- Page config ---
+
+# --- Configuración de la página ---
 st.set_page_config(page_title="Leads Dashboard", layout="wide")
 
 # --- Sidebar filters ---
 st.sidebar.header("Filtros")
+
+# Filtros de fecha
 start_date = st.sidebar.date_input("Fecha inicio", data["Fecha Creación"].min().date())
 end_date = st.sidebar.date_input("Fecha fin", data["Fecha Creación"].max().date())
 
+# Filtros de provincia
 provincia = st.sidebar.multiselect(
     "Provincia", options=data["Provincia"].unique(), default=data["Provincia"].unique()
 )
@@ -50,7 +58,8 @@ canal_entrada = st.sidebar.multiselect(
     default=data["Canal De Entrada"].unique(),
 )
 
-# --- Filter data ---
+
+# --- Filtro total todos los datos ---
 filtered_df = data[
     (data["Fecha Creación"].dt.date >= start_date)
     & (data["Fecha Creación"].dt.date <= end_date)
@@ -61,14 +70,8 @@ filtered_df = data[
 ]
 
 
-# --- Tabs ---
-tab_selection = st.sidebar.selectbox(
-    "Selecciona la pestaña",
-    ["Proyecto Relacionado", "Áreas más y menos valoradas", "Nivel de Interés"],
-)
 
-
-# --- Function to render 4 charts in 2x2 grid ---
+# --- Funcion para renderizar 4 graficos en una grilla 2x2 ---
 def render_4charts(figures):
     row1_col1, row1_col2 = st.columns(2)
     row2_col1, row2_col2 = st.columns(2)
@@ -80,57 +83,115 @@ def render_4charts(figures):
         )
 
 
-# --- TAB: Proyecto Relacionado ---
-if tab_selection == "Proyecto Relacionado":
-    st.header("Dashboard Proyecto Inmobiliaria")
-    
-    niveles_seleccionados = ['compró', 'alto', 'medio', 'bajo']
-    df_filtrado = filtered_df[filtered_df['Nivel De Interes'].isin(niveles_seleccionados)]
 
-    tabla_mascotas = (
-        df_filtrado.groupby(["Tiene mascotas (si,no)", "Nivel De Interes"])
-        .size()
-        .reset_index(name="Número de Leads")
-    )
+
+# --- Proyecto App ---
+if tab_selection == "Proyecto Relacionado":
+    st.header("Proyectos Relacionados")
     
-    # ?? grafico 1
-    # ?? =====================================================================
+     # ?? grafico 1
+     # ?? =====================================================================
+    
+    col_area = "Área Social más valorada"
+
+    # Agrupar por área social y contar proyectos relacionados
+    conteo_proyectos = (
+        filtered_df.groupby(col_area)["Proyectos Relacionados"]
+        .count()
+        .reset_index()
+        .rename(columns={"Proyectos Relacionados": "Cantidad de Proyectos"})
+        .sort_values("Cantidad de Proyectos", ascending=True)
+    )
+
+    # Crear gráfico de barras horizontal interactivo
     fig1 = px.bar(
-        tabla_mascotas,
-        x="Tiene mascotas (si,no)",
-        y="Número de Leads",
-        color="Nivel De Interes",
-        barmode="stack",
-        title="Mascotas vs Nivel de Interés",
+        conteo_proyectos,
+        y=col_area,
+        x="Cantidad de Proyectos",
+        orientation="h",
+        text="Cantidad de Proyectos",
+        title="Áreas Sociales más valoradas vs Número de Proyectos Relacionados",
         labels={
-            "Tiene mascotas (si,no)": "¿Tiene mascotas?",
-            "Número de Leads": "Cantidad de Leads"
-        }
+            col_area: "Área Social más valorada",
+            "Cantidad de Proyectos": "Cantidad de Proyectos Relacionados"
+        },
+        color="Cantidad de Proyectos",
+        color_continuous_scale="Blues"  # similar al color 'skyblue' original
+    )
+
+    # Personalizar visualización
+    fig1.update_traces(textposition="outside")
+    fig1.update_layout(
+        xaxis_title="Cantidad de Proyectos Relacionados",
+        yaxis_title="Área Social más valorada",
+        coloraxis_showscale=False,
+        uniformtext_minsize=8,
+        uniformtext_mode="hide"
     )
 
    
     
     # ?? grafico 2
     #?? =====================================================================
+
+    col_area = "Área Social más valorada"
     col_nivel = "Nivel De Interes"
 
-    counts = filtered_df[col_nivel].dropna().value_counts().reset_index()
-    counts.columns = [col_nivel, "Porcentaje"]
-    counts["Porcentaje"] = (counts["Porcentaje"] /
-                            counts["Porcentaje"].sum()) * 100
 
-    fig2 = px.bar(
-        counts,
-        x=col_nivel,
-        y="Porcentaje",
-        text=counts["Porcentaje"].apply(lambda x: f"{x:.1f}%"),
-        title="Nivel de Interés (% del total)",
-        labels={col_nivel: "Nivel de Interés",
-                "Porcentaje": "Porcentaje del total"}
+    # Filtrar valores nulos
+    df_filtrado = filtered_df[[col_area, col_nivel, "Proyectos Relacionados"]].dropna()
+
+    # Agrupar para gráfico agrupado
+    conteo = (
+        df_filtrado
+        .groupby([col_area, col_nivel])["Proyectos Relacionados"]
+        .count()
+        .reset_index()
     )
 
+    # =============================
+    # Gráfico de barras horizontal agrupado
+    # =============================
+    fig2 = px.bar(
+        conteo,
+        y=col_area,
+        x="Proyectos Relacionados",
+        color=col_nivel,
+        barmode="group",
+        text="Proyectos Relacionados",
+        orientation="h",
+        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Agrupado)",
+        labels={
+            col_area: "Áreas Comunes Valoradas",
+            "Proyectos Relacionados": "Número de Proyectos Relacionados",
+            col_nivel: "Nivel de Interés"
+        },
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
     fig2.update_traces(textposition="outside")
-    fig2.update_layout(yaxis_title="Porcentaje", xaxis_title="Nivel de Interés")
+    
+
+    # =============================
+    # Gráfico de barras horizontal apilado
+    # =============================
+    fig2 = px.bar(
+        conteo,
+        y=col_area,
+        x="Proyectos Relacionados",
+        color=col_nivel,
+        barmode="stack",
+        text="Proyectos Relacionados",
+        orientation="h",
+        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Apilado)",
+        labels={
+            col_area: "Áreas Comunes Valoradas",
+            "Proyectos Relacionados": "Número de Proyectos Relacionados",
+            col_nivel: "Nivel de Interés"
+        },
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
+    fig2.update_traces(textposition="inside")
+ 
 
  
     # ?? grafico 3
@@ -512,113 +573,54 @@ elif tab_selection == "Nivel de Interés":
     #? grafico 10
     #? =====================================================================
 
-    col_area = "Área Social más valorada"
-    col_nivel = "Nivel De Interes"
-
-
-    # Filtrar valores nulos
-    df_filtrado = filtered_df[[col_area, col_nivel, "Proyectos Relacionados"]].dropna()
-
-    # Agrupar para gráfico agrupado
-    conteo = (
-        df_filtrado
-        .groupby([col_area, col_nivel])["Proyectos Relacionados"]
-        .count()
-        .reset_index()
-    )
-
-    # =============================
-    # Gráfico de barras horizontal agrupado
-    # =============================
-    fig10 = px.bar(
-        conteo,
-        y=col_area,
-        x="Proyectos Relacionados",
-        color=col_nivel,
-        barmode="group",
-        text="Proyectos Relacionados",
-        orientation="h",
-        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Agrupado)",
-        labels={
-            col_area: "Áreas Comunes Valoradas",
-            "Proyectos Relacionados": "Número de Proyectos Relacionados",
-            col_nivel: "Nivel de Interés"
-        },
-        color_discrete_sequence=px.colors.sequential.Viridis
-    )
-    fig10.update_traces(textposition="outside")
     
+    col_nivel = "Nivel De Interes"
+    
+    counts = filtered_df[col_nivel].dropna().value_counts().reset_index()
+    counts.columns = [col_nivel, "Porcentaje"]
+    counts["Porcentaje"] = (counts["Porcentaje"] /
+                            counts["Porcentaje"].sum()) * 100
 
-    # =============================
-    # Gráfico de barras horizontal apilado
-    # =============================
     fig10 = px.bar(
-        conteo,
-        y=col_area,
-        x="Proyectos Relacionados",
-        color=col_nivel,
-        barmode="stack",
-        text="Proyectos Relacionados",
-        orientation="h",
-        title="Proyectos Relacionados según Áreas Comunes y Nivel de Interés (Apilado)",
-        labels={
-            col_area: "Áreas Comunes Valoradas",
-            "Proyectos Relacionados": "Número de Proyectos Relacionados",
-            col_nivel: "Nivel de Interés"
-        },
-        color_discrete_sequence=px.colors.sequential.Viridis
+        counts,
+        x=col_nivel,
+        y="Porcentaje",
+        text=counts["Porcentaje"].apply(lambda x: f"{x:.1f}%"),
+        title="Nivel de Interés (% del total)",
+        labels={col_nivel: "Nivel de Interés",
+                "Porcentaje": "Porcentaje del total"}
     )
-    fig10.update_traces(textposition="inside")
+
+    fig10.update_traces(textposition="outside")
+    fig10.update_layout(yaxis_title="Porcentaje", xaxis_title="Nivel de Interés")
 
    
 
     #? grafico 11
     #? =====================================================================
-
-    col_area = "Área Social más valorada"
-
-
-    # # Mostrar las áreas sociales disponibles
-    # st.write("Áreas encontradas en el dataset:")
-    # st.write(filtered_df[col_area].dropna().unique())
-
-    # Agrupar por área social y contar proyectos relacionados
-    conteo_proyectos = (
-        filtered_df.groupby(col_area)["Proyectos Relacionados"]
-        .count()
-        .reset_index()
-        .rename(columns={"Proyectos Relacionados": "Cantidad de Proyectos"})
-        .sort_values("Cantidad de Proyectos", ascending=True)
-    )
-
-    # Crear gráfico de barras horizontal interactivo
-    fig11 = px.bar(
-        conteo_proyectos,
-        y=col_area,
-        x="Cantidad de Proyectos",
-        orientation="h",
-        text="Cantidad de Proyectos",
-        title="Áreas Sociales más valoradas vs Número de Proyectos Relacionados",
-        labels={
-            col_area: "Área Social más valorada",
-            "Cantidad de Proyectos": "Cantidad de Proyectos Relacionados"
-        },
-        color="Cantidad de Proyectos",
-        color_continuous_scale="Blues"  # similar al color 'skyblue' original
-    )
-
-    # Personalizar visualización
-    fig11.update_traces(textposition="outside")
-    fig11.update_layout(
-        xaxis_title="Cantidad de Proyectos Relacionados",
-        yaxis_title="Área Social más valorada",
-        coloraxis_showscale=False,
-        uniformtext_minsize=8,
-        uniformtext_mode="hide"
-    )
-
-
     
+    niveles_seleccionados = ['compró', 'alto', 'medio', 'bajo']
+    df_filtrado = filtered_df[filtered_df['Nivel De Interes'].isin(niveles_seleccionados)]
+
+    tabla_mascotas = (
+        df_filtrado.groupby(["Tiene mascotas (si,no)", "Nivel De Interes"])
+        .size()
+        .reset_index(name="Número de Leads")
+    )
+    
+    fig11 = px.bar(
+        tabla_mascotas,
+        x="Tiene mascotas (si,no)",
+        y="Número de Leads",
+        color="Nivel De Interes",
+        barmode="stack",
+        title="Mascotas vs Nivel de Interés",
+        labels={
+            "Tiene mascotas (si,no)": "¿Tiene mascotas?",
+            "Número de Leads": "Cantidad de Leads"
+        }
+    )
+
     
     #? grafico 12
     #? =====================================================================
