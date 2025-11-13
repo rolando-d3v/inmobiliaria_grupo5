@@ -1,3 +1,4 @@
+# importaciones librerias
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,7 +9,6 @@ from sqlalchemy import create_engine
 
 # uri PostgreSQL connexion
 connection_string = "postgresql://postgres:fUkQJyRhLsHaigOKtuVzDAaKOxNoMSzc@trolley.proxy.rlwy.net:58949/railway"
-
 
 # Create SQLAlchemy engine
 engine = create_engine(connection_string)
@@ -23,7 +23,6 @@ tab_selection = st.sidebar.selectbox(
     "Selecciona la pestaña",
     ["Proyecto Relacionado", "Áreas más y menos valoradas", "Nivel de Interés"],
 )
-
 
 # --- Conversión de fecha ---
 data["Fecha Creación"] = pd.to_datetime(data["Fecha Creación"], format="mixed", errors="coerce")
@@ -47,17 +46,18 @@ estado_civil = st.sidebar.multiselect(
     options=data["Estado Civil"].unique(),
     default=data["Estado Civil"].unique(),
 )
+# Filtros de medio de captacion
 medio_captacion = st.sidebar.multiselect(
     "Medio de Captación",
     options=data["Medio De Captacion"].unique(),
     default=data["Medio De Captacion"].unique(),
 )
+# Filtros de canal de entrada
 canal_entrada = st.sidebar.multiselect(
     "Canal de Entrada",
     options=data["Canal De Entrada"].unique(),
     default=data["Canal De Entrada"].unique(),
 )
-
 
 # --- Filtro total todos los datos ---
 filtered_df = data[
@@ -81,7 +81,6 @@ def render_4charts(figures):
         chart_rows[i].plotly_chart(
             fig, use_container_width=True, config={"displayModeBar": False}
         )
-
 
 
 
@@ -133,10 +132,8 @@ if tab_selection == "Proyecto Relacionado":
     
     # ?? grafico 2
     #?? =====================================================================
-
     col_area = "Área Social más valorada"
     col_nivel = "Nivel De Interes"
-
 
     # Filtrar valores nulos
     df_filtrado = filtered_df[[col_area, col_nivel, "Proyectos Relacionados"]].dropna()
@@ -149,9 +146,7 @@ if tab_selection == "Proyecto Relacionado":
         .reset_index()
     )
 
-    # =============================
     # Gráfico de barras horizontal agrupado
-    # =============================
     fig2 = px.bar(
         conteo,
         y=col_area,
@@ -170,10 +165,7 @@ if tab_selection == "Proyecto Relacionado":
     )
     fig2.update_traces(textposition="outside")
     
-
-    # =============================
     # Gráfico de barras horizontal apilado
-    # =============================
     fig2 = px.bar(
         conteo,
         y=col_area,
@@ -196,11 +188,9 @@ if tab_selection == "Proyecto Relacionado":
  
     # ?? grafico 3
     # ?? =====================================================================
-    
     col_proj = "Proyectos Relacionados"
     col_nivel = "Nivel De Interes"
     base = filtered_df[[col_proj, col_nivel]].dropna()
-
 
     tab = (
         base.groupby([col_proj, col_nivel])
@@ -326,7 +316,6 @@ elif tab_selection == "Áreas más y menos valoradas":
     
     # ?? grafico 6
     # ?? =====================================================================
-
     for c in ["Estado Civil", "Proyectos Relacionados"]:
         if c in filtered_df.columns:
             filtered_df[c] = (
@@ -337,10 +326,8 @@ elif tab_selection == "Áreas más y menos valoradas":
                 .replace({"nan": pd.NA})
             )
 
-
-    TOP_PROYECTOS = 8             # número de proyectos principales a mostrar
-    MIN_CATEGORIAS_ESTADO = 3     # cantidad mínima de categorías de estado civil a incluir
-
+    TOP_PROYECTOS = 8             
+    MIN_CATEGORIAS_ESTADO = 3    
 
     top_proy = (
         filtered_df["Proyectos Relacionados"]
@@ -349,7 +336,6 @@ elif tab_selection == "Áreas más y menos valoradas":
         .head(TOP_PROYECTOS)
         .index
     )
-
     # === Filtrar solo los proyectos seleccionados ===
     sub = filtered_df[filtered_df["Proyectos Relacionados"].isin(top_proy)].copy()
 
@@ -360,12 +346,9 @@ elif tab_selection == "Áreas más y menos valoradas":
         .reset_index(name="Número de Leads")
     )
 
-# === Filtrar categorías de estado civil menos frecuentes ===
     estado_counts = tab["Estado Civil"].value_counts().head(
         MIN_CATEGORIAS_ESTADO).index
     tab = tab[tab["Estado Civil"].isin(estado_counts)]
-
-
 
     fig6 = px.bar(
         tab,
@@ -380,7 +363,6 @@ elif tab_selection == "Áreas más y menos valoradas":
             "Estado Civil": "Estado Civil"
         },
     )
-
     fig6.update_layout(
         xaxis_tickangle=-45,
         xaxis_title="Proyecto",
@@ -391,7 +373,6 @@ elif tab_selection == "Áreas más y menos valoradas":
 
     # ?? grafico 7
     # ?? =====================================================================
-
     for c in ["Área Social más valorada", "Nivel De Interes"]:
         if c in filtered_df.columns:
             filtered_df[c] = (
@@ -402,7 +383,7 @@ elif tab_selection == "Áreas más y menos valoradas":
                 .replace({"nan": pd.NA})
             )
 
-    # === Parámetros ===
+    # === Parámetros
     TOP_GUSTOS = 8 
 
     # === Seleccionar las áreas sociales más valoradas (top N)
@@ -446,6 +427,7 @@ elif tab_selection == "Áreas más y menos valoradas":
     legend_title="Nivel de Interés",
     margin=dict(l=60, r=40, t=60, b=60)
     )
+
 
     # ?? grafico 8
     # ?? =====================================================================
@@ -518,6 +500,8 @@ elif tab_selection == "Áreas más y menos valoradas":
 
 
     render_4charts([fig5, fig6, fig7, fig8])
+
+
 
 
 # --- TAB: Nivel de Interés ---
